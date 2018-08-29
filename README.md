@@ -77,7 +77,7 @@ node api/app.js
 
 ### Document
 
-https://github.com/pages/ExciteJapanPub/summer-intern-2018-blockchain-fabric
+https://excitejapanpub.github.io/summer-intern-2018-blockchain-fabric/.
 
 
 ## サンプルチェーンコードに関して
