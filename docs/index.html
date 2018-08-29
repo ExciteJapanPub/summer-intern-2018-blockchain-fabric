@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="main.css">
+    <meta charset="UTF-8">
+    <title>Intern2018.BlockchainSample.Fabric</title>
+</head>
+<body>
+<div class="container">
+    <h1>Intern2018.BlockchainSample.Fabric</h1>
+    <p class="sw-info">Base URL: <span class="sw-info-basePath">/</span>, Version: <span class="sw-info-version">1.0.0</span></p>
+    <p><p>サマーインターン2018ブロックチェーンAPI</p>
+    </p>
+    
+        <div id="sw-default-produces" class="sw-default-value">
+            <span class="sw-default-value-header">Default response content-types:</span>
+            application/javascript
+        </div>
+    
+    <div id="sw-schemes" class="sw-default-value">
+        <span class="sw-default-value-header">Schemes:</span>
+        http
+    </div>
+    
+        <h2 id="swagger--summary-no-tags">Summary</h2>
+        <table class="table table-bordered table-condensed swagger--summary">
+            <thead>
+            <tr>
+                <th>Path</th>
+                <th>Operation</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+                    <tr>
+                            <td class="swagger--summary-path" rowspan="1">
+                                <a href="#path--invoke">/invoke</a>
+                            </td>
+                        <td>
+                            <a href="#operation--invoke-post">POST</a>
+                        </td>
+                        <td>
+                            <p>invoke API</p>
+        
+                        </td>
+                    </tr>
+                    <tr>
+                            <td class="swagger--summary-path" rowspan="1">
+                                <a href="#path--query">/query</a>
+                            </td>
+                        <td>
+                            <a href="#operation--query-get">GET</a>
+                        </td>
+                        <td>
+                            <p>query API</p>
+        
+                        </td>
+                    </tr>
+            </tbody>
+        </table>
+    
+    
+    
+    <h2>Paths</h2>
+    
+        
+        <span id="path--invoke"></span>
+            <div id="operation--invoke-post" class="swagger--panel-operation-post panel">
+                <div class="panel-heading">
+                    <div class="operation-summary">invoke API</div>
+                    <h3 class="panel-title"><span class="operation-name">POST</span> <strong>/invoke</strong></h3>
+                        Tags:
+                            <a href="#tag-fabric">fabric</a>
+                </div>
+                <div class="panel-body">
+                    <section class="sw-operation-description">
+                        <p>HyperLedgerFabricネットワークに対して指定チェーンコードをinvoke</p>
+            
+                    </section>
+                        
+                            <section class="sw-request-body">
+                                
+                                    <p><span class="label label-default">application/x-www-form-urlencoded</span> 
+                        </p>
+                            </section>        
+                        <section class="sw-request-params">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th class="sw-param-name"></th>
+                                    <th class="sw-param-description"></th>
+                                    <th class="sw-param-type"></th>
+                                    <th class="sw-param-data-type"></th>
+                                    <th class="sw-param-annotation"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                        <tr>
+                                            <td>
+                                                chaincode
+                                            <td><p>チェーンコード名</p>
+                                        </td>
+                                            <td>formData</td>
+                                            <td><span class="json-property-type">string</span>
+                                        <span class="json-property-range" title="Value limits"></span>
+                                        
+                                            </td>
+                                            <td>
+                                                    <span class="json-property-required"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                function
+                                            <td><p>チェーンコード上の関数名</p>
+                                        </td>
+                                            <td>formData</td>
+                                            <td><span class="json-property-type">string</span>
+                                        <span class="json-property-range" title="Value limits"></span>
+                                        
+                                            </td>
+                                            <td>
+                                                    <span class="json-property-required"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                args
+                                            <td><p>チェーンコードの引数(csv)</p>
+                                        </td>
+                                            <td>formData</td>
+                                            <td><span class="json-property-type">string</span>
+                                        <span class="json-property-range" title="Value limits"></span>
+                                        
+                                        <span class="sw-param-collection-format">, 
+                                                        comma separated (<code>args=aaa,bbb</code>)
+                                                    </span>    </td>
+                                            <td>
+                                                    <span class="json-property-required"></span>
+                                            </td>
+                                        </tr>
+                                </tbody>
+                            </table>
+                        </section>
+                    
+                        <section class="sw-responses">
+                                <p><a href="#sw-default-produces">Uses default content-types: </a>
+                                    <span class="label label-default">application/javascript</span> 
+                                </p>
+                            
+                            <dl>
+                                    <dt class="sw-response-200">
+                                        200 OK
+                                    
+                                    </dt>
+                                    <dd class="sw-response-200">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p>チェーンコード実行結果</p>
+                                            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                
+                                                <div class="col-md-6 sw-response-model">
+                                                <div  class="panel panel-definition">
+                                                    <div class="panel-body">
+                                                                <section class="json-schema-description">
+                                                                    <p>チェーンコードのレスポンスによって変化</p>
+                                                            
+                                                                </section>
+                                                            
+                                                    </div>
+                                                </div></div>
+                                            
+                                            </div>                </dd>
+                            </dl>
+                        </section>
+                </div>
+            </div>    
+        <span id="path--query"></span>
+            <div id="operation--query-get" class="swagger--panel-operation-get panel">
+                <div class="panel-heading">
+                    <div class="operation-summary">query API</div>
+                    <h3 class="panel-title"><span class="operation-name">GET</span> <strong>/query</strong></h3>
+                        Tags:
+                            <a href="#tag-fabric">fabric</a>
+                </div>
+                <div class="panel-body">
+                    <section class="sw-operation-description">
+                        <p>HyperLedgerFabricネットワークに対してqueryを実行</p>
+            
+                    </section>
+                    
+                        <section class="sw-request-params">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th class="sw-param-name"></th>
+                                    <th class="sw-param-description"></th>
+                                    <th class="sw-param-type"></th>
+                                    <th class="sw-param-data-type"></th>
+                                    <th class="sw-param-annotation"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                        <tr>
+                                            <td>
+                                                chaincode
+                                            <td><p>チェーンコード名</p>
+                                        </td>
+                                            <td>query</td>
+                                            <td><span class="json-property-type">string</span>
+                                        <span class="json-property-range" title="Value limits"></span>
+                                        
+                                            </td>
+                                            <td>
+                                                    <span class="json-property-required"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                function
+                                            <td><p>チェーンコード上の関数名</p>
+                                        </td>
+                                            <td>query</td>
+                                            <td><span class="json-property-type">string</span>
+                                        <span class="json-property-range" title="Value limits"></span>
+                                        
+                                            </td>
+                                            <td>
+                                                    <span class="json-property-required"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                args
+                                            <td><p>チェーンコードの引数(csv)</p>
+                                        </td>
+                                            <td>query</td>
+                                            <td><span class="json-property-type">string</span>
+                                        <span class="json-property-range" title="Value limits"></span>
+                                        
+                                        <span class="sw-param-collection-format">, 
+                                                        comma separated (<code>args=aaa,bbb</code>)
+                                                    </span>    </td>
+                                            <td>
+                                                    <span class="json-property-required"></span>
+                                            </td>
+                                        </tr>
+                                </tbody>
+                            </table>
+                        </section>
+                    
+                        <section class="sw-responses">
+                                <p><a href="#sw-default-produces">Uses default content-types: </a>
+                                    <span class="label label-default">application/javascript</span> 
+                                </p>
+                            
+                            <dl>
+                                    <dt class="sw-response-200">
+                                        200 OK
+                                    
+                                    </dt>
+                                    <dd class="sw-response-200">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p>チェーンコード実行結果</p>
+                                            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                
+                                                <div class="col-md-6 sw-response-model">
+                                                <div  class="panel panel-definition">
+                                                    <div class="panel-body">
+                                                                <section class="json-schema-description">
+                                                                    <p>チェーンコードのレスポンスによって変化</p>
+                                                            
+                                                                </section>
+                                                            
+                                                    </div>
+                                                </div></div>
+                                            
+                                            </div>                </dd>
+                            </dl>
+                        </section>
+                </div>
+            </div>
+     
+    
+                       
+    
+</div>
+<script src="bundle.js" type="application/javascript"></script>
+</body>
+</html>

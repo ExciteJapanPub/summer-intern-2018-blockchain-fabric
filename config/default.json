@@ -1,0 +1,14 @@
+{
+    "fabric": {
+        "channel": "mychannel",
+        "peers": [
+            "grpc://localhost:7051",
+            "grpc://localhost:7053"
+        ],
+        "orderers": [
+            "grpc://localhost:7050"
+        ],
+        "user": "user1",
+        "timeout": 3000
+    }
+}

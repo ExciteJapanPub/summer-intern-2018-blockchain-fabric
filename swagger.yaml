@@ -1,0 +1,79 @@
+#This is an example of the Uber API
+# as a demonstration of an API spec in YAML
+swagger: '2.0'
+info:
+  title: Intern2018.BlockchainSample.Fabric
+  description: サマーインターン2018ブロックチェーンAPI
+  version: "1.0.0"
+# the domain of the service
+# host: test-blockchain03
+basePath: /
+# array of all schemes that your API supports
+schemes:
+  - http
+# will be prefixed to all paths
+produces:
+  - application/javascript
+paths:
+  /query:
+    get:
+      summary: query API
+      description: |
+        HyperLedgerFabricネットワークに対してqueryを実行
+      parameters:
+        - name: chaincode
+          in: query
+          type: string
+          description: チェーンコード名
+          required: true
+        - name: function
+          in: query
+          type: string
+          description: チェーンコード上の関数名
+          required: true
+        - name: args
+          in: query
+          type: string
+          collectionFormat: csv
+          description: チェーンコードの引数(csv)
+          required: true
+      tags:
+        - fabric
+      responses:
+        200:
+          description: チェーンコード実行結果
+          schema:
+            description: チェーンコードのレスポンスによって変化
+            type: object
+  /invoke:
+    post:
+      summary: invoke API
+      description: |
+        HyperLedgerFabricネットワークに対して指定チェーンコードをinvoke
+      consumes:
+        - application/x-www-form-urlencoded
+      parameters:
+        - name: chaincode
+          in: formData
+          type: string
+          description: チェーンコード名
+          required: true
+        - name: function
+          in: formData
+          type: string
+          description: チェーンコード上の関数名
+          required: true
+        - name: args
+          in: formData
+          type: string
+          collectionFormat: csv
+          description: チェーンコードの引数(csv)
+          required: true
+      tags:
+        - fabric
+      responses:
+        200:
+          description: チェーンコード実行結果
+          schema:
+            description: チェーンコードのレスポンスによって変化
+            type: object

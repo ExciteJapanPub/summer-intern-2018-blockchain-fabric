@@ -1,0 +1,13 @@
+*~
+*#
+.#*
+.*.sw*
+.DS_Store
+.project
+.idea
+.python-version
+node_modules/*
+hfc-key-store/*
+*.pyc
+bin/peer
+bin/orderer
