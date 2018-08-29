@@ -1,4 +1,4 @@
-# Intern2018.BlockchainSample.Fabric
+# summer-intern-2018-blockchain-fabric
 サマーインターン2018ブロックチェーン回のFabricネットワーク構築スクリプトおよびAPI
 
 ## Requirement
