@@ -53,6 +53,11 @@ type Result struct {
 	Entries MonthlyEntries `json:"entries"`
 }
 
+type ResultValue struct {
+	Status Status `json:"status"`
+	Value string `json:"value"`
+}
+
 func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
 	return shim.Success(nil)
 }
@@ -67,6 +72,9 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 	}
 	if function == "getEntries" {
 		return s.getEntries(APIstub, args)
+	}
+	if function == "getValue"{
+		return s.getValue(APIstub, args)
 	}
 
 	return shim.Error("Invalid Smart Contract function name.")
@@ -99,6 +107,36 @@ func (s *SmartContract) getEntries(APIstub shim.ChaincodeStubInterface, args []s
 
 	return shim.Success(resultAsBytes)
 }
+
+func (s *SmartContract) getValue(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+
+	if len(args) != 2 {
+		return shim.Error("Incorrect number of arguments. Expecting 2")
+	}
+
+	// ID
+	no := args[0]
+	entryTime := args[1]		// 対象 "2006-01-02"
+	month := entryTime[0:7]	// 対象月 "2006-01"
+	day := entryTime[0:10]	// 対象 "2006-01-02"
+
+	// データ取得
+	key := s.makeMonthlyEntriesKey(no, month)
+	data := s.getMonthlyEntries(APIstub, key)
+
+	// データがなければ返却用にmonthに指定月を入れた空のMonthlyEntriesを作成
+	if data.Month == "" {
+		data.Month = month
+		data.DailyEntries = map[string]Entry{}
+	}
+
+	// 返却値生成
+	result := ResultValue{Status: StatusOk, Value: data.DailyEntries[day].Value}
+	resultAsBytes, _ := json.Marshal(result)
+
+	return shim.Success(resultAsBytes)
+}
+
 
 func (s *SmartContract) putEntry(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 
