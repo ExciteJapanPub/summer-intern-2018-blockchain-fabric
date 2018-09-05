@@ -2,7 +2,7 @@ type User struct {
   Id              string `json:"id"`
   Password        string `json:"password"`
   Balance         int    `json:"balance"`
-  ReservedRoomId  string `json:reserved_room_id`
+  ReservedRoomId  string `json:"reserved_room_id"`
 }
 
 type Status int
