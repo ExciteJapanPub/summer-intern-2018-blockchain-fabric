@@ -14,5 +14,5 @@ const (
 
 type ResultUser struct {
   Status  Status  `json:"status"`
-  User    User    `json;"user"`
+  User    User    `json:"user"`
 }
