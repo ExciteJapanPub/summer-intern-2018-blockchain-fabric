@@ -16,3 +16,10 @@ type ResultUser struct {
   Status  Status  `json:"status"`
   User    User    `json:"user"`
 }
+
+const DateTimeFormat = "2006-01-02 15:04:05 UTC"
+type Room struct {
+  Id              string    `json:"id"`
+  StatusOfUse     string    `json:"status_of_use"`
+  UnreservingTime time.Time `json:"unreserving_time"`
+}
