@@ -44,7 +44,35 @@ func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
 
 func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response {
 
+	function, args := APIstub.GetFunctionAndParameters()
+	if function == "putUser" {
+			return s.putUser(APIstub, args)
+	}
+
 	return shim.Error("Invalid Smart Contract function name.")
+}
+
+
+func (s *SmartContract) putUser(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+	if len(args) != 2 {
+		return shim.Error("")
+	}
+
+	no := args[0]
+	password := args[1]
+	balance := 0
+	reservedRoomId := ""
+
+	key := password
+	data := User{no, password, balance, reservedRoomId}
+
+	dataAsBytes, _ := json.Marshal(data)
+	APIstub.PutState(key, dataAsBytes)
+
+	result := ResultUser{Status: StatusCreated, User: data}
+	resultAsBytes, _ := json.Marshal(result)
+
+	return shim.Success(resultAsBytes)
 }
 
 func main() {
