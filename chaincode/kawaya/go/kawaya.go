@@ -106,10 +106,7 @@ func (s *SmartContract) getUser(APIstub shim.ChaincodeStubInterface, args []stri
 
 	password := args[0]
 
-	key := password
-	dataAsBytes, _ := APIstub.GetState(key)
-	data := User{}
-	json.Unmarshal(dataAsBytes, &data)
+	data := s.getUserFromStateDB(APIstub, password)
 
 	result := ResultUser{Status: StatusOk, User: data}
 	resultAsBytes, _ := json.Marshal(result)
