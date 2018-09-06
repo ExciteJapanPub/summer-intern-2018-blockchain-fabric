@@ -77,8 +77,73 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 	if function == "updateBalance" {
 		return s.updateBalance(APIstub, args)
   }
+	if function == "reserve"{
+    return s.reserve(APIstub, args)
+  }
 
   return shim.Error("Invalid Smart Contract function name.")
+}
+
+func (s *SmartContract) reserve(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+
+	if len(args) != 2 {
+		return shim.Error("Incorrect number of arguments. Expecting 2")
+	}
+
+	// ID
+	hash := args[0]
+	roomId := args[1]
+
+	user := s.getUserInformation(APIstub, hash)
+
+	// データ取得
+	room := s.getRoomInformation(APIstub, roomId)
+	if user.ReservedRoomId != ""{
+		resultRoom := ResultRoom{Status: StatusConflict,Room: room}
+		resultAsBytes, _ := json.Marshal(resultRoom)
+    return shim.Success(resultAsBytes)
+	}
+
+	// データがなければ返却用にmonthに指定月を入れた空のMonthlyEntriesを作成
+	if room.StatusOfUse == "used" {
+    resultRoom := ResultRoom{Status: StatusConflict,Room: room}
+    resultAsBytes, _ := json.Marshal(resultRoom)
+    return shim.Success(resultAsBytes)
+	}
+
+  room = s.changeStatusOfUsed(room)
+
+	// 返却値生成
+	resultRoom := ResultRoom{Status: StatusOk, Room: room}
+	resultAsBytes, _ := json.Marshal(resultRoom)
+
+	return shim.Success(resultAsBytes)
+}
+
+// user情報を返す
+func (s *SmartContract) getUserInformation(APIstub shim.ChaincodeStubInterface, hash string) User {
+  dataAsBytes, _ := APIstub.GetState(hash)
+	data := User{}
+	json.Unmarshal(dataAsBytes, &data)
+  return data
+}
+
+// room情報を返す
+func (s *SmartContract) getRoomInformation(APIstub shim.ChaincodeStubInterface, roomId string) Room {
+  dataAsBytes, _ := APIstub.GetState(roomId)
+	data := Room{}
+	json.Unmarshal(dataAsBytes, &data)
+  return data
+}
+
+// room情報を返す
+func (s *SmartContract) changeStatusOfUsed(room Room) Room {
+  if room.StatusOfUse == "used"{
+    room.StatusOfUse = "notUsed"
+  }else{
+    room.StatusOfUse = "used"
+  }
+  return room
 }
 
 func (s *SmartContract) getRoom(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
