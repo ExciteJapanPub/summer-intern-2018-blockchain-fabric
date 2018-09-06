@@ -243,6 +243,10 @@ func (s *SmartContract) updateBalanceInStateDB(APIstub shim.ChaincodeStubInterfa
 	data := User{}
 	json.Unmarshal(dataAsBytes, &data)
 
+	if balance < 0 {
+		return data
+	}
+
 	if data.Id != "" {
 		data.Balance = balance
 
