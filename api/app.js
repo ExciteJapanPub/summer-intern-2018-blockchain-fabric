@@ -23,11 +23,9 @@ app.use(morgan('combined'));
 
 // routing
 app.get('/', async function(req, res){
-  console.log(req.query); // for logging
   const fabricModule = new fabricQueryModule("kawaya");
   const result = await fabricModule.run("getAllRooms", []);
   var rooms = result.rooms;
-  console.log(rooms);
   res.render('index', {rooms: rooms});
 });
 
