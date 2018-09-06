@@ -59,6 +59,11 @@ type ResultReserve struct{
 	User    User    `json:"user"`
 }
 
+type ResultUnlock struct {
+	Status Status `json:"status"`
+	IsUnlock bool `json:"is_unlock"`
+}
+
 func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
 	return shim.Success(nil)
 }
@@ -91,6 +96,9 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 	if function == "reserve"{
     return s.reserve(APIstub, args)
   }
+	if function == "unlock" {
+		return s.unlock(APIstub, args)
+	}
 
   return shim.Error("Invalid Smart Contract function name.")
 }
@@ -356,6 +364,65 @@ func (s *SmartContract) updateBalanceInStateDB(APIstub shim.ChaincodeStubInterfa
 	}
 
 	return data
+}
+
+func (s *SmartContract) unlock(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+	if len(args) != 1 {
+		return shim.Error("")
+	}
+
+	password := args[0]
+
+	result := ResultUnlock{}
+
+	// キーを作成してUserを取得
+	keyUser := password
+	user := s.getUserFromStateDB(APIstub, keyUser)
+
+	/***
+	取得したUserのReservedRoomIdを取得する
+	ReservedRoomIdが空の場合のみStatusをStatusNotFound
+	isUnlockをfalseにしてレスポンスを返す
+	***/
+	reservedRoomId := user.ReservedRoomId
+	if reservedRoomId == "" {
+		result.Status = StatusNotFound
+		result.IsUnlock = false
+		resultAsBytes, _ := json.Marshal(result)
+
+		return shim.Success(resultAsBytes)
+	}
+
+  // キーを作成してRoomを取得
+	keyRoom := reservedRoomId
+	room := s.getRoomInformation(APIstub, keyRoom)
+
+	/***
+	取得したRoomのStatusOfUseを取得する
+	statusOfUseがusedでupdateBalanceが0より小さい場合: StatusをStatusOk,IsUnlockをtrueにする
+																									残高を減らす
+																									部屋の状態をnotUsedにする
+	notUsedである場合: StatusをStatusConflict,IsUnlockをfalseにする
+	***/
+	balance := user.Balance
+	updatedBalance := balance - 10
+	statusOfUse := room.StatusOfUse
+	if statusOfUse == "used" && updatedBalance > 0 {
+		result.Status = StatusOk
+		result.IsUnlock = true
+
+		_ = s.updateBalanceInStateDB(APIstub, password, updatedBalance)
+
+		updatedRoom := s.changeStatusOfUsed(room)
+		s.putRoomToState(APIstub, updatedRoom)
+	} else {
+		result.Status = StatusConflict
+		result.IsUnlock = false
+	}
+
+	resultAsBytes, _ := json.Marshal(result)
+
+	return shim.Success(resultAsBytes)
 }
 
 func main() {
