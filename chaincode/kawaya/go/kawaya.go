@@ -233,13 +233,7 @@ func (s *SmartContract) updateBalance(APIstub shim.ChaincodeStubInterface, args 
 	return shim.Success(resultAsBytes)
 }
 
-func (s *SmartContract) getUserFromStateDB(APIstub shim.ChaincodeStubInterface, args []string) User {
-	if len(args) != 1 {
-		return shim.Error("")
-	}
-
-	password := args[0]
-
+func (s *SmartContract) getUserFromStateDB(APIstub shim.ChaincodeStubInterface, password string) User {
 	key := password
 	dataAsBytes, _ := APIstub.GetState(key)
 	data := User{}
