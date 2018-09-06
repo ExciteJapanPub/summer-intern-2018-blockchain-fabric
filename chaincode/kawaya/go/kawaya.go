@@ -87,6 +87,8 @@ func (s *SmartContract) getRoom(APIstub shim.ChaincodeStubInterface, args []stri
   json.Unmarshal(dataAsBytes, &data)
 
 	result := ResultRoom{Status: StatusOk, Room: data}
+
+  return shim.Success(resultAsBytes)
 }
 
 func (s *SmartContract) getUser(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
@@ -133,6 +135,8 @@ func (s *SmartContract) getAllRooms(APIstub shim.ChaincodeStubInterface) sc.Resp
 	if len(rooms) < 1 {
 		result.Status = StatusNotFound
 	}
+
+  return shim.Success(resultAsBytes)
 }
 
 func (s *SmartContract) putUser(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
@@ -173,6 +177,8 @@ func (s *SmartContract) putRoom(APIstub shim.ChaincodeStubInterface, args []stri
 
 	result := ResultRoom{Status: StatusCreated, Room: data}
 	resultAsBytes, _ := json.Marshal(result)
+
+  return shim.Success(resultAsBytes)
 }
 
 func (s *SmartContract) updateReservedRoomId(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
@@ -197,6 +203,7 @@ func (s *SmartContract) updateReservedRoomId(APIstub shim.ChaincodeStubInterface
 
 	result := ResultUser{Status: StatusOk, User: data}
 	resultAsBytes, _ := json.Marshal(result)
+
 	return shim.Success(resultAsBytes)
 }
 
