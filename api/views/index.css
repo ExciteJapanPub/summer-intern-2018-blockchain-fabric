@@ -1,4 +1,3 @@
-<style>
 @charset "UTF-8";
 * {
     box-sizing: border-box;
@@ -63,4 +62,3 @@ body > ul > li > a:hover {
     font-weight: bold;
     text-align: left;
 }
-</style>
