@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html>
+<style>
+  <%- myCss.style %>
+</style>
   <head>
     <title>KAWAYA</title>
   </head>
@@ -8,17 +11,16 @@
     <ul>
       <% for (var i = 0; i < rooms.length; i++) { %>
       <li>
-        <p><%= rooms[i].id %></p>
+        <p class="room"><%= rooms[i].id %></p>
         <% if (rooms[i].status_of_use == 'notUsed') { %>
-          <p>使用状況: 空室</p>
+          <p>予約可能</p>
           <form method="post">
-
             <input type="hidden" name="room_id" value="<%= rooms[i].id %>">
             <input type="hidden" name="user_hash" value="560049c49ddb32fd83a0a137074856df">
-            <input type="submit" value="予約">
+            <input class="submit" type="submit" value="予約">
           </form>
         <% } else { %>
-          <p>使用状況: 使用中</p>
+          <p>予約済み</p>
         <% } %>
         <br>
       </li>
