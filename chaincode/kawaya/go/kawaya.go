@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	sc "github.com/hyperledger/fabric/protos/peer"
@@ -10,15 +11,20 @@ import (
 
 
 type SmartContract struct {
+
 }
 
-// type User struct {
-//   Id              string `json:"id"`
-//   Password        string `json:"password"`
-//   Balance         int    `json:"balance"`
-//   ReservedRoomId  string `json:"reserved_room_id"`
-// }
+type User struct {
+  Id              string `json:"id"`
+  Password        string `json:"password"`
+  Balance         int    `json:"balance"`
+  ReservedRoomId  string `json:"reserved_room_id"`
+}
 
+type Room struct {
+  Id              string    `json:"id"`
+  StatusOfUse     string    `json:"status_of_use"`
+}
 type Status int
 const (
 	StatusOk Status = 200
@@ -26,18 +32,6 @@ const (
   StatusNotFound Status = 404
 	StatusConflict Status = 409
 )
-
-// type ResultUser struct {
-//   Status  Status  `json:"status"`
-//   User    User    `json:"user"`
-// }
-
-// const DateTimeFormat = "2006-01-02 15:04:05 UTC"
-type Room struct {
-  Id              string    `json:"id"`
-  StatusOfUse     string    `json:"status_of_use"`
-  // UnreservingTime time.Time `json:"unreserving_time"`
-}
 
 type ResultRoom struct {
   Status  Status  `json:"status"`
@@ -56,6 +50,7 @@ func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
 func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response {
 
 	function, args := APIstub.GetFunctionAndParameters()
+
 	if function == "putRoom" {
 		return s.putRoom(APIstub, args)
 	}
@@ -64,9 +59,18 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 	}
   if function == "getAllRooms" {
 		return s.getAllRooms(APIstub)
+  }
+	if function == "putUser" {
+			return s.putUser(APIstub, args)
 	}
-
-	return shim.Error("Invalid Smart Contract function name.")
+	if function == "getUser" {
+		return s.getUser(APIstub, args)
+	}
+	if function == "updateReservedRoomId" {
+		return s.updateReservedRoomId(APIstub, args)
+	}
+	if function == "updateBalance" {
+		return s.updateBalance(APIstub, args)
 }
 
 func (s *SmartContract) getRoom(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
@@ -83,6 +87,21 @@ func (s *SmartContract) getRoom(APIstub shim.ChaincodeStubInterface, args []stri
   json.Unmarshal(dataAsBytes, &data)
 
 	result := ResultRoom{Status: StatusOk, Room: data}
+}
+
+func (s *SmartContract) getUser(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+	if len(args) != 1 {
+		return shim.Error("")
+	}
+
+	password := args[0]
+
+	key := password
+	dataAsBytes, _ := APIstub.GetState(key)
+	data := User{}
+	json.Unmarshal(dataAsBytes, &data)
+
+	result := ResultUser{Status: StatusOk, User: data}
 	resultAsBytes, _ := json.Marshal(result)
 
 	return shim.Success(resultAsBytes)
@@ -114,6 +133,25 @@ func (s *SmartContract) getAllRooms(APIstub shim.ChaincodeStubInterface) sc.Resp
 	if len(rooms) < 1 {
 		result.Status = StatusNotFound
 	}
+}
+
+func (s *SmartContract) putUser(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+	if len(args) != 2 {
+		return shim.Error("")
+	}
+
+	no := args[0]
+	password := args[1]
+	balance := 0
+	reservedRoomId := ""
+
+	key := password
+	data := User{no, password, balance, reservedRoomId}
+
+	dataAsBytes, _ := json.Marshal(data)
+	APIstub.PutState(key, dataAsBytes)
+
+	result := ResultUser{Status: StatusCreated, User: data}
 	resultAsBytes, _ := json.Marshal(result)
 
 	return shim.Success(resultAsBytes)
@@ -134,6 +172,55 @@ func (s *SmartContract) putRoom(APIstub shim.ChaincodeStubInterface, args []stri
 	APIstub.PutState(key, dataAsBytes)
 
 	result := ResultRoom{Status: StatusCreated, Room: data}
+	resultAsBytes, _ := json.Marshal(result)
+}
+
+func (s *SmartContract) updateReservedRoomId(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+	if len(args) != 2 {
+		return shim.Error("")
+	}
+
+	password := args[0]
+	reservedRoomId := args[1]
+
+	key := password
+	dataAsBytes, _ := APIstub.GetState(key)
+	data := User{}
+	json.Unmarshal(dataAsBytes, &data)
+
+	if data.Id != "" {
+		data.ReservedRoomId = reservedRoomId
+
+		dataAsBytes, _ := json.Marshal(data)
+		APIstub.PutState(key, dataAsBytes)
+	}
+
+	result := ResultUser{Status: StatusOk, User: data}
+	resultAsBytes, _ := json.Marshal(result)
+	return shim.Success(resultAsBytes)
+}
+
+func (s *SmartContract) updateBalance(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+	if len(args) != 2 {
+		return shim.Error("")
+	}
+
+	password := args[0]
+	balance, _ := strconv.Atoi(args[1])
+
+	key := password
+	dataAsBytes, _ := APIstub.GetState(key)
+	data := User{}
+	json.Unmarshal(dataAsBytes, &data)
+
+	if data.Id != "" {
+		data.Balance = balance
+
+		dataAsBytes, _ := json.Marshal(data)
+		APIstub.PutState(key, dataAsBytes)
+	}
+
+	result := ResultUser{Status: StatusOk, User: data}
 	resultAsBytes, _ := json.Marshal(result)
 
 	return shim.Success(resultAsBytes)
