@@ -301,17 +301,7 @@ func (s *SmartContract) updateBalance(APIstub shim.ChaincodeStubInterface, args 
 	password := args[0]
 	balance, _ := strconv.Atoi(args[1])
 
-	key := password
-	dataAsBytes, _ := APIstub.GetState(key)
-	data := User{}
-	json.Unmarshal(dataAsBytes, &data)
-
-	if data.Id != "" {
-		data.Balance = balance
-
-		dataAsBytes, _ := json.Marshal(data)
-		APIstub.PutState(key, dataAsBytes)
-	}
+	data := s.updateBalanceInStateDB(APIstub, password, balance)
 
 	result := ResultUser{Status: StatusOk, User: data}
 	resultAsBytes, _ := json.Marshal(result)
@@ -324,6 +314,26 @@ func (s *SmartContract) getUserFromStateDB(APIstub shim.ChaincodeStubInterface, 
 	dataAsBytes, _ := APIstub.GetState(key)
 	data := User{}
 	json.Unmarshal(dataAsBytes, &data)
+
+	return data
+}
+
+func (s *SmartContract) updateBalanceInStateDB(APIstub shim.ChaincodeStubInterface, password string, balance int) User {
+	key := password
+	dataAsBytes, _ := APIstub.GetState(key)
+	data := User{}
+	json.Unmarshal(dataAsBytes, &data)
+
+	if balance < 0 {
+		return data
+	}
+
+	if data.Id != "" {
+		data.Balance = balance
+
+		dataAsBytes, _ := json.Marshal(data)
+		APIstub.PutState(key, dataAsBytes)
+	}
 
 	return data
 }
