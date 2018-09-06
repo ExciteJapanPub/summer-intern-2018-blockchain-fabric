@@ -27,5 +27,8 @@
     "linklocal": "^2.8.2",
     "morgan": "^1.9.0"
   },
-  "author": "Excite"
+  "author": "Excite",
+  "devDependencies": {
+    "ejs": "^2.6.1"
+  }
 }
