@@ -21,6 +21,11 @@ type User struct {
   ReservedRoomId  string `json:"reserved_room_id"`
 }
 
+type ResultUser struct {
+  Status  Status  `json:"status"`
+  User    User    `json:"user"`
+}
+
 type Room struct {
   Id              string    `json:"id"`
   StatusOfUse     string    `json:"status_of_use"`
@@ -71,6 +76,9 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 	}
 	if function == "updateBalance" {
 		return s.updateBalance(APIstub, args)
+  }
+
+  return shim.Error("Invalid Smart Contract function name.")
 }
 
 func (s *SmartContract) getRoom(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
@@ -87,7 +95,7 @@ func (s *SmartContract) getRoom(APIstub shim.ChaincodeStubInterface, args []stri
   json.Unmarshal(dataAsBytes, &data)
 
 	result := ResultRoom{Status: StatusOk, Room: data}
-
+	resultAsBytes, _ := json.Marshal(result)
   return shim.Success(resultAsBytes)
 }
 
@@ -135,7 +143,7 @@ func (s *SmartContract) getAllRooms(APIstub shim.ChaincodeStubInterface) sc.Resp
 	if len(rooms) < 1 {
 		result.Status = StatusNotFound
 	}
-
+	resultAsBytes, _ := json.Marshal(result)
   return shim.Success(resultAsBytes)
 }
 
