@@ -48,6 +48,17 @@ type ResultAllRooms struct {
   Rooms    []Room    `json:"rooms"`
 }
 
+type ResultError struct{
+	Status Status `json:"status"`
+	Message string `json:"message"`
+}
+
+type ResultReserve struct{
+	Status Status `json:"status"`
+	Room    Room    `json:"room"`
+	User    User    `json:"user"`
+}
+
 func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
 	return shim.Success(nil)
 }
@@ -96,6 +107,15 @@ func (s *SmartContract) reserve(APIstub shim.ChaincodeStubInterface, args []stri
 
 	user := s.getUserInformation(APIstub, hash)
 
+	if user.Id == "" {
+		resultError := ResultError{
+			Status: StatusNotFound,
+			Message: "UserNotFound" + hash,
+		}
+		resultAsBytes, _ := json.Marshal(resultError)
+    return shim.Success(resultAsBytes)
+	}
+
 	// データ取得
 	room := s.getRoomInformation(APIstub, roomId)
 	if user.ReservedRoomId != ""{
@@ -110,15 +130,15 @@ func (s *SmartContract) reserve(APIstub shim.ChaincodeStubInterface, args []stri
     resultAsBytes, _ := json.Marshal(resultRoom)
     return shim.Success(resultAsBytes)
 	}
-
+	user.ReservedRoomId = room.Id
   room = s.changeStatusOfUsed(room)
 
 	s.putUserToState(APIstub, user)
 	s.putRoomToState(APIstub, room)
 
 	// 返却値生成
-	resultRoom := ResultRoom{Status: StatusOk, Room: room}
-	resultAsBytes, _ := json.Marshal(resultRoom)
+	resultReserve := ResultReserve{Status: StatusOk, Room: room, User: user}
+	resultAsBytes, _ := json.Marshal(resultReserve)
 
 	return shim.Success(resultAsBytes)
 }
@@ -126,7 +146,7 @@ func (s *SmartContract) reserve(APIstub shim.ChaincodeStubInterface, args []stri
 // Userをブロックチェーンにput
 func (s *SmartContract) putUserToState(APIstub shim.ChaincodeStubInterface, user User) {
 	userAsBytes, _ := json.Marshal(user)
-	APIstub.PutState(user.Id, userAsBytes)
+	APIstub.PutState(user.Password, userAsBytes)
 }
 
 // Roomをブロックチェーンにput
