@@ -113,12 +113,28 @@ func (s *SmartContract) reserve(APIstub shim.ChaincodeStubInterface, args []stri
 
   room = s.changeStatusOfUsed(room)
 
+	s.putUserToState(APIstub, user)
+	s.putRoomToState(APIstub, room)
+
 	// 返却値生成
 	resultRoom := ResultRoom{Status: StatusOk, Room: room}
 	resultAsBytes, _ := json.Marshal(resultRoom)
 
 	return shim.Success(resultAsBytes)
 }
+
+// Userをブロックチェーンにput
+func (s *SmartContract) putUserToState(APIstub shim.ChaincodeStubInterface, user User) {
+	userAsBytes, _ := json.Marshal(user)
+	APIstub.PutState(user.Id, userAsBytes)
+}
+
+// Roomをブロックチェーンにput
+func (s *SmartContract) putRoomToState(APIstub shim.ChaincodeStubInterface, room Room) {
+	roomAsBytes, _ := json.Marshal(room)
+	APIstub.PutState(room.Id, roomAsBytes)
+}
+
 
 // user情報を返す
 func (s *SmartContract) getUserInformation(APIstub shim.ChaincodeStubInterface, hash string) User {
