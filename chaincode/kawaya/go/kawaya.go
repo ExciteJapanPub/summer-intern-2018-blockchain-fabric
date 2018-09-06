@@ -260,7 +260,7 @@ func (s *SmartContract) putUser(APIstub shim.ChaincodeStubInterface, args []stri
 
 	no := args[0]
 	password := args[1]
-	balance := 0
+	balance := 300
 	reservedRoomId := ""
 
 	key := password
