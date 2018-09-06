@@ -23,6 +23,7 @@ type Status int
 const (
 	StatusOk Status = 200
 	StatusCreated Status = 201
+  StatusNotFound Status = 404
 	StatusConflict Status = 409
 )
 
@@ -34,13 +35,18 @@ const (
 // const DateTimeFormat = "2006-01-02 15:04:05 UTC"
 type Room struct {
   Id              string    `json:"id"`
-  StatusOfUse     bool    `json:"status_of_use"`
+  StatusOfUse     string    `json:"status_of_use"`
   // UnreservingTime time.Time `json:"unreserving_time"`
 }
 
 type ResultRoom struct {
   Status  Status  `json:"status"`
   Room    Room    `json:"room"`
+}
+
+type ResultAllRooms struct {
+  Status  Status  `json:"status"`
+  Rooms    []Room    `json:"rooms"`
 }
 
 func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
@@ -51,10 +57,13 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 
 	function, args := APIstub.GetFunctionAndParameters()
 	if function == "putRoom" {
-			return s.putUser(APIstub, args)
+		return s.putRoom(APIstub, args)
 	}
 	if function == "getRoom" {
-		return s.getUser(APIstub, args)
+		return s.getRoom(APIstub, args)
+	}
+  if function == "getAllRooms" {
+		return s.getAllRooms(APIstub)
 	}
 
 	return shim.Error("Invalid Smart Contract function name.")
@@ -67,7 +76,6 @@ func (s *SmartContract) getRoom(APIstub shim.ChaincodeStubInterface, args []stri
 
 	// データ取得
 	key := args[0]
-	StatusOfUse := Room.StatusOfUse
 
 	// 返却値生成
   dataAsBytes, _ := APIstub.GetState(key)
@@ -80,21 +88,52 @@ func (s *SmartContract) getRoom(APIstub shim.ChaincodeStubInterface, args []stri
 	return shim.Success(resultAsBytes)
 }
 
+func (s *SmartContract) getAllRooms(APIstub shim.ChaincodeStubInterface) sc.Response {
+  startKey := "Room0"
+  endKey := "Room999"
+
+  resultsIterator, err := APIstub.GetStateByRange(startKey, endKey)
+  if err != nil {
+    return shim.Error(err.Error())
+  }
+  defer resultsIterator.Close()
+
+  var rooms []Room
+	for resultsIterator.HasNext() {
+		queryResponse, err := resultsIterator.Next()
+		if err != nil {
+			return shim.Error(err.Error())
+		}
+		room := Room{}
+		json.Unmarshal(queryResponse.Value, &room)
+		rooms = append(rooms, room)
+	}
+
+  // 返却値生成
+	result := ResultAllRooms{Status: StatusOk, Rooms: rooms}
+	if len(rooms) < 1 {
+		result.Status = StatusNotFound
+	}
+	resultAsBytes, _ := json.Marshal(result)
+
+	return shim.Success(resultAsBytes)
+}
+
 func (s *SmartContract) putRoom(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 	if len(args) != 1 {
     return shim.Error("Incorrect number of arguments. Expecting 1")
 	}
 
 	RoomId := args[0]
-	StatusOfUse := false
+	StatusOfUse := "notUsed"
 
 	key := RoomId
-	data := Room{Id, StatusOfUse}
+	data := Room{Id: RoomId, StatusOfUse: StatusOfUse}
 
 	dataAsBytes, _ := json.Marshal(data)
 	APIstub.PutState(key, dataAsBytes)
 
-	result := ResultUser{Status: StatusCreated, Room: data}
+	result := ResultRoom{Status: StatusCreated, Room: data}
 	resultAsBytes, _ := json.Marshal(result)
 
 	return shim.Success(resultAsBytes)
