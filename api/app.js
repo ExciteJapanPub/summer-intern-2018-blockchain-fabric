@@ -4,8 +4,12 @@ const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const httpStatus = require('http-status-codes');
+const fabricQueryModule = require('api-modules/fabric/query');
 const app = express();
 
+// view engine setup
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
 
 // router
 const query = require('./routes/query');
@@ -18,6 +22,13 @@ app.use(bodyParser.json());
 app.use(morgan('combined'));
 
 // routing
+app.get('/', async function(req, res){
+  const fabricModule = new fabricQueryModule("kawaya");
+  const result = await fabricModule.run("getAllRooms", []);
+  var rooms = result.rooms;
+  res.render('index', {rooms: rooms});
+});
+
 app.use('/query', query);
 app.use('/invoke', invoke);
 

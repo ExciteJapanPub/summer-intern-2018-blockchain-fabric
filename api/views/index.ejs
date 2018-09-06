@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>KAWAYA</title>
+  </head>
+  <body>
+    <h1>KAWAYA Rooms</h1>
+    <ul>
+      <% for (var i = 0; i < rooms.length; i++) { %>
+      <li>
+        <p><%= rooms[i].id %></p>
+        <% if (rooms[i].status_of_use == 'notUsed') { %>
+          <p>使用状況: 空室</p>
+          <a href="/reserve">予約する</a>
+        <% } else { %>
+          <p>使用状況: 使用中</p>
+        <% } %>
+        <br>
+      </li>
+      <% } %>
+    </ul>
+  </body>
+</html>
