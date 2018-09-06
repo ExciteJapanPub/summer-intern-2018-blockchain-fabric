@@ -11,7 +11,7 @@ const app = express();
 // view engine setup
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
-app.use('/static', express.static('./api/views'));
+app.use('/static', express.static('./api/views/static'));
 
 // router
 const query = require('./routes/query');
