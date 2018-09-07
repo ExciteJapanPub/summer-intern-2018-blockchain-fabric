@@ -37,18 +37,19 @@ app.get('/', async function(req, res){
 });
 
 app.post('/', async function(req, res){
-let result;
-const invokeModule = new fabricInvokeModule("kawaya");
-const params = [req.body.user_hash, req.body.room_id];
-result = await invokeModule.run("reserve", params);
-if(result.status !== 200){
-  res.render("error");
-  return;
-}
-const queryModule = new fabricQueryModule("kawaya");
-result = await queryModule.run("getAllRooms", []);
-var rooms = result.rooms;
-res.render('index', {rooms: rooms});
+  let result;
+  const invokeModule = new fabricInvokeModule("kawaya");
+  const params = [req.body.user_hash, req.body.room_id];
+  result = await invokeModule.run("reserve", params);
+  if(result.status !== 200){
+    res.render("error");
+    return;
+  }
+  const queryModule = new fabricQueryModule("kawaya");
+  result = await queryModule.run("getAllRooms", []);
+  var rooms = result.rooms;
+  res.render('index', {rooms: rooms});
+});
 
 app.use('/query', query);
 app.use('/invoke', invoke);

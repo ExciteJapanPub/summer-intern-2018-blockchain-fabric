@@ -48,7 +48,7 @@ body > ul > li {
     text-decoration: none;
 }
 
-body > ul > li > a:hover {
+.submit:hover {
     background-color: transparent;
     border: 2px solid #998bfa;
     color: #998bfa !important;
