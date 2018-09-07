@@ -4,8 +4,9 @@ const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const httpStatus = require('http-status-codes');
-const fabricQueryModule = require('api-modules/fabric/query');
 const fabricInvokeModule = require('api-modules/fabric/invoke');
+const fabricQueryModule = require('api-modules/fabric/query');
+const fs = require('fs');
 const app = express();
 
 // view engine setup
@@ -16,6 +17,11 @@ app.use('/static', express.static('./api/views/static'));
 // router
 const query = require('./routes/query');
 const invoke = require('./routes/invoke');
+
+// css
+const myCss = {
+  style : fs.readFileSync('./api/views/index.css', 'utf8')
+};
 
 // body-parserを追加、JSONパース
 app.use(bodyParser.urlencoded({extended: true}));
@@ -28,10 +34,9 @@ app.get('/', async function(req, res){
   const fabricModule = new fabricQueryModule("kawaya");
   const result = await fabricModule.run("getAllRooms", []);
   var rooms = result.rooms;
-  res.render('index', {rooms: rooms});
+  res.render('index', {rooms: rooms, myCss: myCss});
 });
 
-// routing
 app.post('/', async function(req, res){
   let result;
   const invokeModule = new fabricInvokeModule("kawaya");
