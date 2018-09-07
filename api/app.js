@@ -4,6 +4,7 @@ const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const httpStatus = require('http-status-codes');
+const fabricInvokeModule = require('api-modules/fabric/invoke');
 const fabricQueryModule = require('api-modules/fabric/query');
 const fs = require('fs');
 const app = express();
@@ -34,6 +35,20 @@ app.get('/', async function(req, res){
   var rooms = result.rooms;
   res.render('index', {rooms: rooms, myCss: myCss});
 });
+
+app.post('/', async function(req, res){
+let result;
+const invokeModule = new fabricInvokeModule("kawaya");
+const params = [req.body.user_hash, req.body.room_id];
+result = await invokeModule.run("reserve", params);
+if(result.status !== 200){
+  res.render("error");
+  return;
+}
+const queryModule = new fabricQueryModule("kawaya");
+result = await queryModule.run("getAllRooms", []);
+var rooms = result.rooms;
+res.render('index', {rooms: rooms});
 
 app.use('/query', query);
 app.use('/invoke', invoke);
