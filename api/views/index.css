@@ -62,3 +62,15 @@ body > ul > li {
     font-weight: bold;
     text-align: left;
 }
+
+img {
+   max-width: 150px;
+   height: 200px;
+   object-fit: cover;
+   transition: all .3s;
+}
+img:hover {
+    -webkit-transform: translateY(-5px);
+    -ms-transform: translateY(-5px);
+    transform: translateY(-5px);
+}
