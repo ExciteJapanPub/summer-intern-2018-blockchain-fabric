@@ -303,17 +303,7 @@ func (s *SmartContract) updateReservedRoomId(APIstub shim.ChaincodeStubInterface
 	password := args[0]
 	reservedRoomId := args[1]
 
-	key := password
-	dataAsBytes, _ := APIstub.GetState(key)
-	data := User{}
-	json.Unmarshal(dataAsBytes, &data)
-
-	if data.Id != "" {
-		data.ReservedRoomId = reservedRoomId
-
-		dataAsBytes, _ := json.Marshal(data)
-		APIstub.PutState(key, dataAsBytes)
-	}
+	data := s.updateReservedRoomIdInStateDB(APIstub, password, reservedRoomId)
 
 	result := ResultUser{Status: StatusOk, User: data}
 	resultAsBytes, _ := json.Marshal(result)
@@ -358,6 +348,22 @@ func (s *SmartContract) updateBalanceInStateDB(APIstub shim.ChaincodeStubInterfa
 
 	if data.Id != "" {
 		data.Balance = balance
+
+		dataAsBytes, _ := json.Marshal(data)
+		APIstub.PutState(key, dataAsBytes)
+	}
+
+	return data
+}
+
+func (s *SmartContract) updateReservedRoomIdInStateDB(APIstub shim.ChaincodeStubInterface, password string, reservedRoomId string) User {
+	key := password
+	dataAsBytes, _ := APIstub.GetState(key)
+	data := User{}
+	json.Unmarshal(dataAsBytes, &data)
+
+	if data.Id != "" {
+		data.ReservedRoomId = reservedRoomId
 
 		dataAsBytes, _ := json.Marshal(data)
 		APIstub.PutState(key, dataAsBytes)
